@@ -1,0 +1,9 @@
+{
+  "name": "Régua de Percurso",
+  "version": "0.3.16",
+  "manifest_version": 1,
+  "description": "Régua de percurso e áreas de efeito alinhadas às grades.",
+  "author": "Wesley Marins",
+  "icon": "/regua-percurso-owlbear/ruler.svg",
+  "background_url": "/regua-percurso-owlbear/index.html"
+}

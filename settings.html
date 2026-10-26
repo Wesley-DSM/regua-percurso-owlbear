@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>document.documentElement.classList.toggle("route-settings", new URLSearchParams(window.location.search).get("tool") === "route");</script>
+    <title>Régua de Percurso 0.3.16</title>
+    <link rel="stylesheet" href="/src/settings.css" />
+  </head>
+  <body>
+    <main class="settings-app">
+      <header class="header">
+        <div class="brand-icon" aria-hidden="true">↗</div>
+        <div class="header-copy"><h1>Personalização da régua</h1></div>
+      </header>
+
+      <section class="preview-card" aria-labelledby="preview-heading">
+        <div class="section-heading"><h2 id="preview-heading">Prévia</h2><span class="edit-hint">Selecione um elemento</span></div>
+        <div class="tool-tabs" role="tablist" aria-label="Ferramenta para personalizar">
+          <button class="tool-tab" type="button" role="tab" aria-selected="false" data-tool-tab="route">Régua</button>
+          <button class="tool-tab" type="button" role="tab" aria-selected="false" data-tool-tab="circle">Círculo</button>
+          <button class="tool-tab is-active" type="button" role="tab" aria-selected="true" data-tool-tab="cone">Cone</button>
+        </div>
+        <svg id="mapPreview" class="map-preview" viewBox="0 0 560 420" role="group" aria-label="Prévia interativa em uma grade quadrada horizontal de oito colunas e seis linhas.">
+          <defs>
+            <linearGradient id="mapFade" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#1b202b" />
+              <stop offset="1" stop-color="#11151d" />
+            </linearGradient>
+            <clipPath id="previewClip"><rect x="0.5" y="0.5" width="559" height="419" rx="14" /></clipPath>
+          </defs>
+          <rect class="map-background" x="0.5" y="0.5" width="559" height="419" rx="14" />
+          <g id="previewZoomGroup" clip-path="url(#previewClip)">
+            <rect class="grid-boundary" x="56" y="42" width="448" height="336" />
+            <path class="grid-lines" d="M 56 42 V 378 M 112 42 V 378 M 168 42 V 378 M 224 42 V 378 M 280 42 V 378 M 336 42 V 378 M 392 42 V 378 M 448 42 V 378 M 504 42 V 378 M 56 42 H 504 M 56 98 H 504 M 56 154 H 504 M 56 210 H 504 M 56 266 H 504 M 56 322 H 504 M 56 378 H 504" />
+
+            <g id="previewAreaGroup" class="hotspot" data-element="coneArea" data-preview-view="area" tabindex="0" role="button" aria-label="Personalizar cone">
+              <path id="previewAreaShape" d="" />
+            </g>
+            <g class="hotspot" data-element="line" data-preview-view="route" tabindex="0" role="button" aria-label="Personalizar linha">
+              <path id="previewLineHit" class="hit-area" d="M 168 266 L 336 154" />
+              <path id="previewLine" d="M 168 266 L 336 154" class="route-line" />
+            </g>
+            <g id="previewNodeGroup" class="hotspot" data-element="node" data-preview-view="route" tabindex="0" role="button" aria-label="Personalizar nó comum"></g>
+            <g id="previewTerrainNodeGroup" class="hotspot" data-element="terrainNode" data-preview-view="route" tabindex="0" role="button" aria-label="Personalizar nó de terreno difícil"></g>
+
+            <g class="hotspot indicator-hotspot" data-element="indicator" data-preview-view="shared" tabindex="0" role="button" aria-label="Personalizar indicador de distância">
+              <rect id="previewIndicatorBody" x="350" y="155" width="100" height="30" rx="15" class="indicator-body" />
+              <text id="previewIndicatorText" x="400" y="170" class="indicator-text" dominant-baseline="central">5 m</text>
+            </g>
+
+            <g class="hotspot button-hotspot" data-element="confirmButton" data-preview-view="route" tabindex="0" role="button" aria-label="Personalizar botão de confirmar">
+              <circle id="previewConfirmBg" cx="217" cy="44" r="17" class="button-bg confirm-bg" />
+              <text id="previewConfirmIcon" x="217" y="50" class="button-icon">✓</text>
+            </g>
+            <g class="hotspot button-hotspot" data-element="cancelButton" data-preview-view="route" tabindex="0" role="button" aria-label="Personalizar botão de cancelar">
+              <circle id="previewCancelBg" cx="259" cy="44" r="17" class="button-bg cancel-bg" />
+              <text id="previewCancelIcon" x="259" y="50" class="button-icon">✕</text>
+            </g>
+            <g class="hotspot button-hotspot" data-element="terrainButton" data-preview-view="route" tabindex="0" role="button" aria-label="Personalizar botão de terreno difícil">
+              <circle id="previewTerrainBg" cx="301" cy="44" r="17" class="button-bg terrain-bg" />
+              <path id="previewTerrainIcon" class="terrain-icon" d="M 294 43 H 304 V 53 H 294 Z M 297.2 39.8 H 307.2 M 307.2 39.8 V 49.8" />
+            </g>
+          </g>
+        </svg>
+      </section>
+
+      <div class="quick-actions">
+        <button id="resetAll" class="secondary-button" type="button"><span aria-hidden="true">↺</span> Restaurar padrão</button>
+        <p id="status" role="status" aria-live="polite">Salvo</p>
+      </div>
+
+      <dialog id="editorDialog" class="editor-dialog" aria-labelledby="editorTitle">
+        <form id="editorForm" method="dialog">
+          <div class="dialog-header">
+            <div class="dialog-icon" id="editorIcon" aria-hidden="true">✦</div>
+            <div class="dialog-title-wrap"><h2 id="editorTitle">Linha</h2></div>
+            <button class="icon-close" value="close" aria-label="Fechar personalização" type="submit">×</button>
+          </div>
+          <div id="editorFields" class="editor-fields"></div>
+          <div class="dialog-footer">
+            <button id="resetElement" class="text-button" type="button">Padrão</button>
+            <button class="primary-button" value="close" type="submit">Concluir</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+    <script type="module" src="/src/settings.js"></script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "owlbear-ruler-path",
+  "private": true,
+  "version": "0.3.16",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@owlbear-rodeo/sdk": "^3.1.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}
