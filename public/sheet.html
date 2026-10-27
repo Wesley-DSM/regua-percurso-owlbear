@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171717" />
+    <title>Ficha A&A</title>
+  </head>
+  <body>
+    <main id="app" class="sheet-page not-ready">
+      <header class="sheet-header">
+        <div class="mark token-mark" aria-hidden="true">
+          <img id="selected-token-image" alt="" hidden />
+          <span id="selected-token-fallback">A&amp;A</span>
+        </div>
+        <div class="sheet-title">
+          <p class="eyebrow">FICHA DO PERSONAGEM</p>
+          <h1 id="selected-name">Carregando ficha…</h1>
+        </div>
+        <button id="reset-sheet" class="reset-sheet-button sheet-options-button" type="button" aria-label="Opções da ficha" title="Opções da ficha" hidden>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+        </button>
+      </header>
+
+      <div class="sheet-actions">
+        <button id="toggle-player-visibility" class="visibility-toggle" type="button" hidden>Esconder</button>
+        <button id="add-to-initiative" class="initiative-toggle" type="button" disabled>Iniciativa</button>
+      </div>
+
+      <dialog id="sheet-options-dialog" class="confirm-dialog sheet-options-dialog" aria-labelledby="sheet-options-title">
+        <h2 id="sheet-options-title">Opções da ficha</h2>
+        <div class="sheet-options-actions">
+          <button id="sheet-option-delete" class="sheet-option-button destructive-option" type="button">Apagar ficha</button>
+          <button id="sheet-option-clear" class="sheet-option-button" type="button">Limpar ficha</button>
+          <button id="sheet-option-import" class="sheet-option-button" type="button">Importar ficha</button>
+          <button id="sheet-option-export" class="sheet-option-button" type="button">Exportar HTML</button>
+        </div>
+        <div class="confirm-dialog-actions"><button id="close-sheet-options" type="button" class="confirm-cancel">Fechar</button></div>
+      </dialog>
+      <dialog id="reset-sheet-dialog" class="confirm-dialog" aria-labelledby="reset-sheet-title" aria-describedby="reset-sheet-description">
+        <h2 id="reset-sheet-title">Limpar ficha?</h2>
+        <p id="reset-sheet-description">Os dados da ficha serão removidos deste token. Não é possível desfazer.</p>
+        <div class="confirm-dialog-actions">
+          <button id="cancel-reset-sheet" type="button" class="confirm-cancel">Cancelar</button>
+          <button id="confirm-reset-sheet" type="button" class="confirm-destructive">Limpar ficha</button>
+        </div>
+      </dialog>
+      <dialog id="delete-token-dialog" class="confirm-dialog" aria-labelledby="delete-token-title" aria-describedby="delete-token-description">
+        <h2 id="delete-token-title">Apagar ficha?</h2>
+        <p id="delete-token-description">O token e a ficha serão removidos da cena. Não é possível desfazer.</p>
+        <div class="confirm-dialog-actions">
+          <button id="cancel-delete-token" type="button" class="confirm-cancel">Cancelar</button>
+          <button id="confirm-delete-token" type="button" class="confirm-destructive">Apagar ficha</button>
+        </div>
+      </dialog>
+      <dialog id="name-appearance-dialog" class="confirm-dialog settings-edit-dialog appearance-editor-dialog token-name-appearance-dialog" aria-labelledby="name-appearance-title">
+        <div class="appearance-editor-heading">
+          <h2 id="name-appearance-title">Nome do Personagem</h2>
+          <button type="button" class="appearance-dialog-close-icon" id="close-name-appearance" aria-label="Fechar">×</button>
+        </div>
+        <div class="appearance-name-size-control">
+          <span>Tamanho <output id="token-name-size-value" for="token-name-size">0%</output></span>
+          <input id="token-name-size" type="range" min="0" max="100" step="1" value="0" aria-label="Tamanho do nome" />
+        </div>
+        <div class="appearance-compact-options token-name-appearance-options">
+          <label class="appearance-color-chip appearance-text-color-chip" title="Cor do nome"><input id="token-name-color" type="color" value="#000000" aria-label="Cor do nome" /><span>Aa</span></label>
+          <select id="token-name-font" class="font-choice" aria-label="Fonte do nome">
+            <option value="sans-serif">Fonte padrão</option><option value="Arial">Arial</option><option value="serif">Serifada</option><option value="Georgia">Georgia</option><option value="Times New Roman">Times New Roman</option><option value="monospace">Monoespaçada</option><option value="Courier New">Courier New</option><option value="cursive">Manuscrita</option>
+          </select>
+          <select id="token-name-alignment" aria-label="Alinhamento do nome"><option value="left">Nome à esquerda</option><option value="center">Nome ao centro</option><option value="right">Nome à direita</option></select>
+        </div>
+        <label class="settings-checkbox-control token-name-visibility" for="token-name-visible"><input id="token-name-visible" type="checkbox" checked /><span>Mostrar nome</span></label>
+        <div class="confirm-dialog-actions name-appearance-dialog-actions">
+          <button id="reset-name-appearance" type="button" class="confirm-cancel">Padrão da sala</button>
+          <button id="cancel-name-appearance" type="button" class="confirm-cancel">Cancelar</button>
+          <button id="save-name-appearance" type="button" class="confirm-destructive">Salvar</button>
+        </div>
+      </dialog>
+
+      <dialog id="resource-settings-dialog" class="confirm-dialog settings-edit-dialog" aria-labelledby="resource-settings-title">
+        <h2 id="resource-settings-title">Limites de Ferimentos e Estresses</h2>
+        <section class="resource-config-section" aria-labelledby="wounds-config-title">
+          <h3 id="wounds-config-title">Ferimentos</h3>
+          <div class="resource-config-grid">
+            <div class="resource-config-labels"><span>Machucado</span><span>Inconsciente</span><span>Morto</span></div>
+            <div class="resource-config-values"><input id="config-wounds-hurt" aria-label="Limite de Ferimentos para Machucado" type="number" min="1" max="9999" step="1" value="5" /><input id="config-wounds-unconscious" aria-label="Limite de Ferimentos para Inconsciente" type="number" min="1" max="9999" step="1" value="10" /><input id="config-wounds-dead" aria-label="Limite de Ferimentos para Morto" type="number" min="1" max="9999" step="1" value="20" /></div>
+          </div>
+          <div class="chronic-stepper-row"><span>Ferimentos Crônicos</span><div class="resource-tracker-stepper"><button type="button" data-config-chronic="wounds" data-resource-delta="-1" aria-label="Diminuir Ferimentos Crônicos">‹</button><output id="config-wounds-chronic-value">0</output><button type="button" data-config-chronic="wounds" data-resource-delta="1" aria-label="Aumentar Ferimentos Crônicos">›</button></div></div>
+        </section>
+        <section class="resource-config-section" aria-labelledby="stress-config-title">
+          <h3 id="stress-config-title">Estresses</h3>
+          <div class="resource-config-grid">
+            <div class="resource-config-labels"><span>Estressado</span><span>Enlouquecendo</span><span>Insano</span></div>
+            <div class="resource-config-values"><input id="config-stress-stressed" aria-label="Limite de Estresses para Estressado" type="number" min="1" max="9999" step="1" value="5" /><input id="config-stress-losing-mind" aria-label="Limite de Estresses para Enlouquecendo" type="number" min="1" max="9999" step="1" value="10" /><input id="config-stress-insane" aria-label="Limite de Estresses para Insano" type="number" min="1" max="9999" step="1" value="20" /></div>
+          </div>
+          <div class="chronic-stepper-row"><span>Estresses Crônicos</span><div class="resource-tracker-stepper"><button type="button" data-config-chronic="stress" data-resource-delta="-1" aria-label="Diminuir Estresses Crônicos">‹</button><output id="config-stress-chronic-value">0</output><button type="button" data-config-chronic="stress" data-resource-delta="1" aria-label="Aumentar Estresses Crônicos">›</button></div></div>
+        </section>
+        <div class="confirm-dialog-actions"><button id="cancel-resource-settings" type="button" class="confirm-cancel">Cancelar</button><button id="save-resource-settings" type="button" class="confirm-destructive">Salvar</button></div>
+      </dialog>
+
+      <input id="import-sheet-file" type="file" accept="application/json,.json,text/html,.html,.htm" hidden />
+
+      <form id="sheet-form" autocomplete="off">
+        <nav class="sheet-tabs" aria-label="Abas da ficha">
+          <button class="sheet-tab active" type="button" data-sheet-tab="character-tab" aria-selected="true">Ficha</button>
+          <button class="sheet-tab" type="button" data-sheet-tab="inventory-tab" aria-selected="false">Inventário</button>
+          <button class="sheet-tab" type="button" data-sheet-tab="powers-tab" aria-selected="false">Poderes</button>
+          <button class="sheet-tab" type="button" data-sheet-tab="rituals-tab" aria-selected="false">Rituais</button>
+          <button class="sheet-tab" type="button" data-sheet-tab="profile-tab" aria-selected="false">Perfil</button>
+        </nav>
+
+        <div id="character-tab" class="sheet-tab-panel" data-sheet-panel>
+        <section class="panel collapsible-panel identity-panel" aria-labelledby="identity-heading">
+          <div class="panel-heading">
+            <h2 id="identity-heading" class="collapsible-heading-toggle" data-collapse-target="identity-content" role="button" tabindex="0" aria-expanded="true" aria-controls="identity-content">Identidade</h2>
+          </div>
+          <div id="identity-content" class="collapsible-content">
+            <div class="identity-name-row">
+              <label class="field" id="character-name-field">
+                <span>Nome</span>
+                <input id="character-name" name="characterName" type="text" maxlength="100" placeholder="Nome do personagem" />
+              </label>
+              <button id="edit-token-name-appearance" class="token-name-toggle name-appearance-button" type="button" aria-label="Personalizar nome no token" title="Personalizar aparência do nome deste token"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button>
+            </div>
+            <div class="identity-pair identity-class-organization">
+              <label class="field">
+                <span>Classe</span>
+                <select id="character-class" name="characterClass" data-autosave>
+                  <option value="">Selecionar classe</option>
+                  <option value="Combatente">Combatente</option>
+                  <option value="Especialista">Especialista</option>
+                  <option value="Exorcista">Exorcista</option>
+                  <option value="Monstruoso">Monstruoso</option>
+                  <option value="Ocultista">Ocultista</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Organização</span>
+                <select id="character-organization" name="organization" data-autosave>
+                  <option value="">Selecionar organização</option>
+                  <option value="Instituto">Instituto</option>
+                  <option value="EMPAP">EMPAP</option>
+                  <option value="ABIN">ABIN</option>
+                  <option value="Paralink">Paralink</option>
+                  <option value="Sexto Círculo">Sexto Círculo</option>
+                </select>
+              </label>
+            </div>
+            <div class="identity-pair identity-occupation-evolution">
+              <label class="field">
+                <span>Ocupação</span>
+                <input id="character-occupation" name="occupation" type="text" maxlength="100" placeholder="Ocupação" />
+              </label>
+              <label class="field evolution-field">
+                <span>Evolução (%)</span>
+                <input id="character-evolution" name="evolution" type="number" min="0" max="100" step="1" value="1" required />
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel collapsible-panel resources-panel" aria-labelledby="resources-heading">
+          <div class="panel-heading">
+            <h2 id="resources-heading" class="collapsible-heading-toggle" data-collapse-target="resources-content" role="button" tabindex="0" aria-expanded="true" aria-controls="resources-content">Ferimentos e Estresses</h2>
+          </div>
+          <div id="resources-content" class="collapsible-content">
+            <div class="resource-trackers">
+              <div class="resource-tracker resource-tracker-wounds">
+                <div class="resource-tracker-track">
+                  <span id="sheet-wounds-fill" class="resource-tracker-fill" aria-hidden="true"></span>
+                  <span id="sheet-wounds-hurt-marker" class="resource-tracker-marker" aria-hidden="true"></span>
+                  <span id="sheet-wounds-unconscious-marker" class="resource-tracker-marker" aria-hidden="true"></span>
+                  <div class="resource-tracker-line">
+                    <button type="button" class="resource-tracker-label" data-open-resource-settings="wounds">Ferimentos</button>
+                    <div class="resource-tracker-stepper" aria-label="Ajustar Ferimentos">
+                      <button type="button" data-resource-step="wounds" data-resource-delta="-1" aria-label="Diminuir Ferimentos">‹</button>
+                      <output id="sheet-wounds-current" aria-live="polite">0/10</output>
+                      <button type="button" data-resource-step="wounds" data-resource-delta="1" aria-label="Aumentar Ferimentos">›</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="resource-tracker resource-tracker-stress">
+                <div class="resource-tracker-track">
+                  <span id="sheet-stress-fill" class="resource-tracker-fill" aria-hidden="true"></span>
+                  <span id="sheet-stress-stressed-marker" class="resource-tracker-marker" aria-hidden="true"></span>
+                  <span id="sheet-stress-losing-mind-marker" class="resource-tracker-marker" aria-hidden="true"></span>
+                  <div class="resource-tracker-line">
+                    <button type="button" class="resource-tracker-label" data-open-resource-settings="stress">Estresses</button>
+                    <div class="resource-tracker-stepper" aria-label="Ajustar Estresses">
+                      <button type="button" data-resource-step="stress" data-resource-delta="-1" aria-label="Diminuir Estresses">‹</button>
+                      <output id="sheet-stress-current" aria-live="polite">0/10</output>
+                      <button type="button" data-resource-step="stress" data-resource-delta="1" aria-label="Aumentar Estresses">›</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="resource-hidden-fields" hidden aria-hidden="true">
+              <input id="resource-one-normal" type="number" min="0" step="1" value="0" />
+              <input id="resource-one-chronic" type="number" min="0" step="1" value="0" />
+              <input id="resource-one-unconscious" type="number" min="1" step="1" value="10" />
+              <input id="resource-one-hurt-at" type="number" min="1" step="1" value="5" />
+              <input id="resource-one-dead-at" type="number" min="1" step="1" value="20" />
+              <input id="resource-two-normal" type="number" min="0" step="1" value="0" />
+              <input id="resource-two-chronic" type="number" min="0" step="1" value="0" />
+              <input id="resource-two-unconscious" type="number" min="1" step="1" value="10" />
+              <input id="resource-two-stressed-at" type="number" min="1" step="1" value="5" />
+              <input id="resource-two-insane-at" type="number" min="1" step="1" value="20" />
+            </div>
+          </div>
+        </section>
+
+        <section class="panel collapsible-panel defenses-panel" aria-labelledby="defenses-heading">
+          <div class="panel-heading">
+            <h2 id="defenses-heading" class="collapsible-heading-toggle" data-collapse-target="defenses-content" role="button" tabindex="0" aria-expanded="true" aria-controls="defenses-content">Defesas</h2>
+          </div>
+          <div id="defenses-content" class="collapsible-content">
+            <div class="defenses-grid" aria-label="Valores calculados das defesas">
+              <div class="defense-stat defense-stat-evasion"><span>EVA</span><output id="defense-evasion-value">5</output></div>
+              <div class="defense-stat defense-stat-protection"><span>PRO</span><output id="defense-protection-value">1</output></div>
+              <div class="defense-stat defense-stat-conviction"><span>CON</span><output id="defense-conviction-value">1</output></div>
+            </div>
+            <button id="defense-active-toggle" class="defense-active-button" type="button" aria-pressed="false">Defesas Ativas</button>
+            <div class="reaction-defense-buttons" aria-label="Defesas por reação">
+              <button id="defletir-toggle" class="reaction-defense-button reaction-defletir-button" type="button" aria-pressed="false">Defletir</button>
+              <button id="aparar-toggle" class="reaction-defense-button reaction-aparar-button" type="button" aria-pressed="false">Aparar</button>
+            </div>
+            <p id="defense-active-status" class="defense-active-status" hidden></p>
+            <div class="defense-hidden-values" hidden aria-hidden="true">
+              <input id="character-evasion" type="number" min="0" step="1" value="5" />
+              <input id="character-protection" type="number" min="0" step="1" value="1" />
+              <input id="character-conviction" type="number" min="0" step="1" value="1" />
+            </div>
+          </div>
+        </section>
+
+        <section class="panel collapsible-panel skills-panel" aria-labelledby="skills-heading">
+          <div class="panel-heading">
+            <h2 id="skills-heading" class="collapsible-heading-toggle" data-collapse-target="skills-content" role="button" tabindex="0" aria-expanded="true" aria-controls="skills-content">Perícias</h2>
+          </div>
+          <div id="skills-content" class="collapsible-content">
+            <div id="skills-list" class="skills-list"></div>
+          </div>
+        </section>
+        </div>
+
+        <div id="inventory-tab" class="sheet-tab-panel" data-sheet-panel hidden>
+          <section class="panel equipment-inventory-panel" aria-labelledby="inventory-heading">
+            <div class="panel-heading inventory-panel-heading">
+              <div class="inventory-toolbar">
+                <h2 id="inventory-heading">Equipamentos</h2>
+                <input id="inventory-spaces" name="inventorySpaces" type="hidden" value="0" />
+                <div class="inventory-spaces-control">
+                  <button id="inventory-spaces-used" class="inventory-spaces-used" type="button" aria-live="polite" title="Clique para editar o limite">0/0</button>
+                  <input id="inventory-spaces-editor" class="inventory-spaces-editor" type="number" min="0" max="9999" step="1" inputmode="numeric" aria-label="Limite de espaços do inventário" title="Digite o limite e pressione Enter" hidden />
+                </div>
+              </div>
+            </div>
+            <div id="inventory-list" class="equipment-sections">
+              <section class="equipment-section">
+                <div class="equipment-section-heading"><h3 class="collapsible-heading-toggle" data-collapse-target="weapons-content" role="button" tabindex="0" aria-expanded="true" aria-controls="weapons-content">Armas</h3><button class="add-entry-button" type="button" data-add-equipment="weapon" aria-label="Adicionar arma" title="Adicionar arma">+</button></div>
+                <div id="weapons-content" class="collapsible-content"><div id="weapons-list" class="equipment-list" data-equipment-list="weapon"></div></div>
+              </section>
+              <section class="equipment-section">
+                <div class="equipment-section-heading"><h3 class="collapsible-heading-toggle" data-collapse-target="armor-content" role="button" tabindex="0" aria-expanded="true" aria-controls="armor-content">Armaduras e escudos</h3><button class="add-entry-button" type="button" data-add-equipment="armor" aria-label="Adicionar armadura ou escudo" title="Adicionar armadura ou escudo">+</button></div>
+                <div id="armor-content" class="collapsible-content"><div id="armor-list" class="equipment-list" data-equipment-list="armor"></div></div>
+              </section>
+              <section class="equipment-section">
+                <div class="equipment-section-heading"><h3 class="collapsible-heading-toggle" data-collapse-target="supplies-content" role="button" tabindex="0" aria-expanded="true" aria-controls="supplies-content">Suprimentos</h3><button class="add-entry-button" type="button" data-add-equipment="supply" aria-label="Adicionar suprimento" title="Adicionar suprimento">+</button></div>
+                <div id="supplies-content" class="collapsible-content"><div id="supplies-list" class="equipment-list" data-equipment-list="supply"></div></div>
+              </section>
+            </div>
+          </section>
+        </div>
+
+        <div id="powers-tab" class="sheet-tab-panel" data-sheet-panel hidden>
+          <section class="panel collapsible-panel" aria-labelledby="powers-heading">
+            <div class="panel-heading">
+              <h2 id="powers-heading" class="collapsible-heading-toggle" data-collapse-target="powers-content" role="button" tabindex="0" aria-expanded="true" aria-controls="powers-content">Poderes</h2>
+              <div class="panel-heading-actions">
+                <button id="add-power" class="add-entry-button" type="button" aria-label="Adicionar poder" title="Adicionar poder">+</button>
+              </div>
+            </div>
+            <div id="powers-content" class="collapsible-content">
+              <div id="powers-list" class="entry-list ability-list"></div>
+            </div>
+          </section>
+        </div>
+
+        <div id="rituals-tab" class="sheet-tab-panel" data-sheet-panel hidden>
+          <section class="panel collapsible-panel" aria-labelledby="rituals-heading">
+            <div class="panel-heading">
+              <h2 id="rituals-heading" class="collapsible-heading-toggle" data-collapse-target="rituals-content" role="button" tabindex="0" aria-expanded="true" aria-controls="rituals-content">Rituais</h2>
+              <div class="panel-heading-actions">
+                <button id="add-ritual" class="add-entry-button" type="button" aria-label="Adicionar ritual" title="Adicionar ritual">+</button>
+              </div>
+            </div>
+            <div id="rituals-content" class="collapsible-content">
+              <div id="rituals-list" class="entry-list ability-list"></div>
+            </div>
+          </section>
+        </div>
+
+        <div id="profile-tab" class="sheet-tab-panel" data-sheet-panel hidden>
+          <section class="panel collapsible-panel" aria-labelledby="parameters-heading">
+            <div class="panel-heading">
+              <h2 id="parameters-heading" class="collapsible-heading-toggle" data-collapse-target="parameters-content" role="button" tabindex="0" aria-expanded="true" aria-controls="parameters-content">Parâmetros</h2>
+              <div class="panel-heading-actions">
+                <button id="add-parameter" class="add-entry-button" type="button" aria-label="Adicionar parâmetro" title="Adicionar parâmetro">+</button>
+              </div>
+            </div>
+            <div id="parameters-content" class="collapsible-content">
+              <div id="parameters-list" class="entry-list"></div>
+            </div>
+          </section>
+          <section class="panel collapsible-panel" aria-labelledby="traumas-heading">
+            <div class="panel-heading">
+              <h2 id="traumas-heading" class="collapsible-heading-toggle" data-collapse-target="traumas-content" role="button" tabindex="0" aria-expanded="true" aria-controls="traumas-content">Traumas</h2>
+              <div class="panel-heading-actions">
+                <button id="add-trauma" class="add-entry-button" type="button" aria-label="Adicionar trauma" title="Adicionar trauma">+</button>
+              </div>
+            </div>
+            <div id="traumas-content" class="collapsible-content">
+              <div id="traumas-list" class="entry-list"></div>
+            </div>
+          </section>
+          <section class="panel collapsible-panel" aria-labelledby="history-heading">
+            <div class="panel-heading">
+              <h2 id="history-heading" class="collapsible-heading-toggle" data-collapse-target="history-content" role="button" tabindex="0" aria-expanded="true" aria-controls="history-content">História</h2>
+            </div>
+            <div id="history-content" class="collapsible-content">
+              <label class="field history-field">
+                <textarea id="character-history" name="characterHistory" rows="8" maxlength="16000" data-format-replace="true" aria-label="História" placeholder="Escreva a história do personagem…"></textarea>
+              </label>
+            </div>
+          </section>
+        </div>
+        <dialog id="equipment-dialog" class="confirm-dialog equipment-dialog" aria-labelledby="equipment-dialog-title">
+          <div id="equipment-dialog-form">
+            <div class="equipment-dialog-heading"><h2 id="equipment-dialog-title">Equipamento</h2><button id="equipment-dialog-close" type="button" aria-label="Fechar" class="remove-entry-button remove-icon-button">×</button></div>
+            <label class="equipment-field"><span>Nome</span><input id="equipment-name" type="text" maxlength="140" required /></label>
+            <div id="weapon-editor-fields" class="equipment-field-grid" hidden>
+              <label class="equipment-field"><span>Perícia</span><select id="equipment-weapon-skill"><option value="armas-simples">Armas Simples</option><option value="armas-de-fogo">Armas de Fogo</option></select></label>
+              <label class="equipment-field" id="equipment-spaces-field"><span>Espaços</span><input id="equipment-spaces" type="number" min="0" max="9999" step="1" value="1" /></label>
+              <label class="equipment-field"><span>Dano</span><input id="equipment-damage" type="text" maxlength="100" placeholder="Força ou 1d6" required /></label>
+              <label class="equipment-field"><span>Críticos</span><input id="equipment-critical" type="number" min="0" max="99" step="1" required /></label>
+              <div class="equipment-field-grid equipment-subgrid"><label class="equipment-field"><span>Defletir</span><input id="equipment-reaction-evasion" type="number" min="-99" max="99" step="1" value="0" /></label><label class="equipment-field"><span>Aparar</span><input id="equipment-reaction-protection" type="number" min="-99" max="99" step="1" value="0" /></label></div>
+            </div>
+            <div id="armor-editor-fields" class="equipment-field-grid" hidden>
+              <label class="equipment-field"><span>Tipo</span><select id="equipment-armor-kind"><option value="armadura">Armadura</option><option value="escudo">Escudo</option></select></label>
+              <label class="equipment-field equipment-check-field"><input id="equipment-equipped" type="checkbox" /><span>Em uso</span></label>
+              <div class="equipment-field-grid equipment-subgrid"><label class="equipment-field"><span id="equipment-evasion-label">Evasão base</span><input id="equipment-evasion-bonus" type="number" min="-99" max="99" step="1" value="0" /></label><label class="equipment-field"><span id="equipment-protection-label">Proteção base</span><input id="equipment-protection-bonus" type="number" min="-99" max="99" step="1" value="0" /></label></div>
+              <p class="equipment-formula-hint" id="equipment-armor-formula">Evasão = base + Agilidade · Proteção = base + Fortitude</p>
+              <div class="equipment-field-grid equipment-subgrid"><label class="equipment-field"><span>Defesa ativa: Evasão</span><input id="equipment-active-evasion" type="number" min="-99" max="99" step="1" value="0" /></label><label class="equipment-field"><span>Defesa ativa: Proteção</span><input id="equipment-active-protection" type="number" min="-99" max="99" step="1" value="0" /></label></div>
+            </div>
+            <div id="supply-editor-fields" class="equipment-field-grid" hidden>
+              <label class="equipment-field equipment-check-field"><input id="equipment-uses-enabled" type="checkbox" /><span>Controlar usos</span></label>
+              <label class="equipment-field" id="equipment-uses-field"><span>Usos restantes</span><input id="equipment-uses" type="number" min="0" max="9999" step="1" placeholder="0" /></label>
+            </div>
+            <label class="equipment-field"><span>Descrição</span><textarea id="equipment-description" rows="4" maxlength="4000"></textarea></label>
+            <div class="confirm-dialog-actions"><button id="equipment-dialog-cancel" type="button" class="confirm-cancel">Cancelar</button><button id="equipment-dialog-save" type="button" class="confirm-secondary">Salvar</button></div>
+          </div>
+        </dialog>
+      </form>
+
+      <section class="notice" id="notice" role="status" aria-live="polite">
+        Aguardando conexão com o Owlbear Rodeo…
+      </section>
+    </main>
+    <script>
+      (() => {
+        // Avoid leaving the panel on "Carregando ficha…" when a module or SDK boot fails.
+        const failIfStuck = () => {
+          const selectedName = document.getElementById("selected-name");
+          const notice = document.getElementById("notice");
+          if (!selectedName || !/carregando ficha/i.test(selectedName.textContent || "")) return;
+          selectedName.textContent = "Falha ao carregar";
+          document.getElementById("app")?.classList.remove("not-ready");
+          if (notice) {
+            notice.replaceChildren(document.createTextNode("A ficha não iniciou. Confira a publicação no GitHub Actions ou recarregue a extensão. Se continuar, abra o console do navegador para ver o erro."));
+            const retry = document.createElement("button");
+            retry.type = "button";
+            retry.className = "confirm-secondary";
+            retry.textContent = "Recarregar";
+            retry.addEventListener("click", () => window.location.reload());
+            retry.style.marginLeft = "8px";
+            notice.append(retry);
+            notice.dataset.type = "error";
+          }
+        };
+        window.setTimeout(failIfStuck, 15000);
+        window.addEventListener("error", () => window.setTimeout(failIfStuck, 0));
+        window.addEventListener("unhandledrejection", () => window.setTimeout(failIfStuck, 0));
+      })();
+    </script>
+    <script type="module" src="./src/sheet.js"></script>
+  </body>
+</html>
