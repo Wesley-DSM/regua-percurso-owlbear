@@ -1,55 +1,43 @@
-# Régua de Percurso — extensão para Owlbear Rodeo
+# Régua de Percurso
 
-Versão do código: 0.3.19. O repositório está configurado para publicar automaticamente no GitHub Pages.
+Extensão para criar percursos medidos e áreas de efeito diretamente no mapa do Owlbear Rodeo.
 
-## Alterações na versão 0.3.19
+**Adicionar ao Owlbear Rodeo:** [https://wesley-dsm.github.io/regua-percurso-owlbear/manifest.json](https://wesley-dsm.github.io/regua-percurso-owlbear/manifest.json)
 
-- As prévias da régua e das áreas agora ocupam toda a altura disponível. A grade se estende horizontalmente para preencher o restante da largura.
-- A régua mantém a região central de referência 5×5; as áreas mantêm a região central 7×7.
-- Os elementos visuais de uma régua confirmada formam um grupo conectado pelo sistema `attachedTo`: linha, nós e indicador.
-- Mover o grupo visual de uma régua atualiza os dados compartilhados da rota, preservando a aparência personalizada de cada jogador.
-- O contorno de uma área confirmada é o elemento-pai do indicador de distância.
-- As prévias em andamento também conectam seus nós, indicadores e controles ao elemento-pai correspondente.
+Cole o endereço acima na opção de adicionar extensão do seu perfil no Owlbear Rodeo.
 
-## Alterações
+## Ferramentas
 
-- Corrigida a seleção de células em cones diagonais nas grades quadradas, evitando falhas e recortes desconectados.
-- Mantido o padrão de células já definido para cones quadrados cardinais.
-- Prévia das áreas reorganizada em uma grade centralizada de 7 × 7.
-- Removido o brilho de seleção da prévia para que as cores e opacidades exibidas correspondam à aparência configurada.
+### Régua de percurso
 
-## Funcionalidades
+Desenhe um caminho pelo mapa adicionando pontos ao longo do trajeto. A extensão acompanha o percurso em tempo real e exibe a distância total, respeitando a escala, a unidade e o método de medição configurados na grade da cena. Os pontos são ajustados às células da grade.
 
-- Régua de percurso com nós e marcação de terreno difícil.
-- Réguas de formas circulares e cônicas adaptadas às grades suportadas.
-- Personalização independente da régua e das áreas.
+Durante a criação, é possível:
 
-## Publicação no GitHub Pages
+- Adicionar pontos com cliques ou arrastando pelo mapa.
+- Marcar pontos como terreno difícil em grades quadradas. O custo de atravessar essas células é acrescentado à medição.
+- Desfazer o último ponto, confirmar o percurso ou cancelar o desenho.
+- Iniciar o percurso sobre um token para movê-lo junto com o trajeto. Ao cancelar, o token retorna à posição inicial.
 
-**Importante:** crie o repositório com o nome exato `regua-percurso-owlbear`. O caminho do site está configurado para esse nome. Se mudar o nome, atualize o `base` em `vite.config.js` e os caminhos em `public/manifest.json`.
+**Atalhos:** `Ctrl` adiciona um ponto na posição do cursor; `Shift` marca o ponto atual como terreno difícil; `Backspace` remove o último ponto; `Enter` confirma o percurso; `Esc` ou `Delete` cancela.
 
-1. Crie no GitHub um repositório público chamado `regua-percurso-owlbear`. Não precisa adicionar README, licença ou `.gitignore` no GitHub, pois estes arquivos já estão neste projeto.
-2. Envie todos os arquivos desta pasta para a raiz do repositório e faça o primeiro commit na branch `main`. Inclua a pasta oculta `.github/workflows/`.
-3. No GitHub, abra **Settings → Pages** e em **Build and deployment → Source** selecione **GitHub Actions**.
-4. Abra a aba **Actions** e espere o workflow **Build and deploy to GitHub Pages** terminar com sucesso. Ele será executado a cada envio para `main`.
-5. O endereço público do site seguirá este formato: `https://SEU-USUARIO.github.io/regua-percurso-owlbear/`.
+Depois de confirmado, o percurso permanece no mapa com seus pontos e indicador de distância. Seus elementos podem ser movidos em conjunto.
 
-## Instalar no Owlbear Rodeo
+### Áreas de efeito
 
-1. Abra o site publicado substituindo `SEU-USUARIO` pelo seu nome de usuário do GitHub.
-2. Confirme que `https://SEU-USUARIO.github.io/regua-percurso-owlbear/manifest.json` abre um JSON com o nome **Régua de Percurso** e versão **0.3.19**.
-3. No perfil do Owlbear Rodeo, adicione uma extensão usando exatamente esse endereço do `manifest.json` como link de instalação.
-4. Ative a extensão na sala.
+A ferramenta de formas permite criar dois tipos de área:
 
-A extensão só estará disponível depois que a publicação do GitHub Actions concluir. Não use o link do repositório nem o link `raw.githubusercontent.com`; use o endereço público do `manifest.json` no GitHub Pages.
+- **Circular:** define o centro e o alcance da área. A extensão desenha o contorno a partir das células abrangidas.
+- **Cone:** define a origem e a direção. A largura cresce em etapas alinhadas à grade, com oito direções nas grades quadradas e doze nas hexagonais.
 
-## Desenvolvimento local
+A prévia acompanha o cursor antes da confirmação. O indicador mostra o alcance da área. Depois de criada, a forma e seu indicador podem ser movidos em conjunto.
 
-Requer Node.js 22 ou compatível com o Vite configurado.
+## Personalização
 
-```bash
-npm install
-npm run dev
-```
+A aparência da régua de percurso e das áreas é configurada separadamente. As opções incluem cores, opacidade, espessura, estilo de linha, formato e tamanho dos pontos, aparência dos botões e estilo dos indicadores de distância.
 
-Para gerar os arquivos finais localmente, execute `npm run build`; o resultado é salvo em `dist/`.
+As configurações visuais são salvas localmente para cada jogador. Assim, cada pessoa pode ajustar a aparência sem alterar as preferências dos demais participantes.
+
+## Repositório
+
+O projeto é publicado pelo GitHub Pages. As atualizações enviadas à branch `main` são compiladas e publicadas automaticamente.

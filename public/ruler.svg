@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <path d="M4 19 L9 14 L14 17 L20 5" fill="none" stroke="#e64b63" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="4" cy="19" r="2" fill="#fff" stroke="#e64b63" stroke-width="1.6"/>
-  <circle cx="9" cy="14" r="2" fill="#fff" stroke="#e64b63" stroke-width="1.6"/>
-  <circle cx="14" cy="17" r="2" fill="#fff" stroke="#e64b63" stroke-width="1.6"/>
-  <circle cx="20" cy="5" r="2" fill="#fff" stroke="#e64b63" stroke-width="1.6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Régua de Percurso">
+  <path d="M15 45 L25 29 L40 37 L49 19"
+        stroke="#E64B63" stroke-width="4.4"
+        stroke-linecap="round" stroke-linejoin="round" />
+  <g fill="#FFFFFF" stroke="#E64B63" stroke-width="2.4">
+    <circle cx="15" cy="45" r="5.2" />
+    <circle cx="25" cy="29" r="5.2" />
+    <circle cx="40" cy="37" r="5.2" />
+    <circle cx="49" cy="19" r="5.2" />
+  </g>
 </svg>

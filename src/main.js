@@ -499,7 +499,7 @@ function createCurve(points, inProgress = false, itemId = makeId(), distanceText
     .metadata({
       [KEY_KIND]: inProgress ? "route-preview" : "route",
       [KEY_ROUTE]: routeId,
-      [KEY_CREATED]: "Régua de Percurso 0.3.19",
+      [KEY_CREATED]: "Régua de Percurso 1.0.0",
       ...(dataOnly ? { [`${EXTENSION_ID}/localVisuals`]: true } : {}),
       ...(typeof distanceText === "string" ? { [KEY_DISTANCE_TEXT]: distanceText } : {}),
       ...(Number.isFinite(anchorHalfHeight) ? { [KEY_ANCHOR_HALF_HEIGHT]: anchorHalfHeight } : {}),
@@ -961,7 +961,7 @@ function createNode(point, routeId, persistent, terrain = false, parentId = null
       [KEY_ROUTE]: routeId,
       [KEY_NODE_CENTER_X]: point.x,
       [KEY_NODE_CENTER_Y]: point.y,
-      [KEY_CREATED]: "Régua de Percurso 0.3.19",
+      [KEY_CREATED]: "Régua de Percurso 1.0.0",
     });
   builder = parentId ? builder.attachedTo(parentId) : builder;
   return builder.build();
@@ -983,7 +983,7 @@ async function updateDistancePreview(pointer) {
       }
     });
   } catch (error) {
-    console.warn("Régua 0.3.19: não foi possível atualizar o indicador de distância.", error);
+    console.warn("Régua 1.0.0: não foi possível atualizar o indicador de distância.", error);
   }
 }
 
@@ -1030,7 +1030,7 @@ async function migrateLegacyDistanceLabels() {
             }
           });
         } catch (error) {
-          console.warn("Régua 0.3.19: não foi possível migrar a distância de uma rota antiga.", error);
+          console.warn("Régua 1.0.0: não foi possível migrar a distância de uma rota antiga.", error);
         }
       }
     }
@@ -1043,7 +1043,7 @@ async function migrateLegacyDistanceLabels() {
       .map((item) => item.id);
     if (localLegacyIds.length) await OBR.scene.local.deleteItems(localLegacyIds);
   } catch (error) {
-    console.warn("Régua 0.3.19: não foi possível limpar todos os indicadores antigos.", error);
+    console.warn("Régua 1.0.0: não foi possível limpar todos os indicadores antigos.", error);
   }
 }
 
@@ -1053,9 +1053,9 @@ async function showOverlayErrors(errors) {
   const first = errors[0];
   const detail = String(first.error?.message || first.error || "erro desconhecido").slice(0, 120);
   try {
-    await OBR.notification.show(`Régua 0.3.19: falha em ${first.description}. ${detail}`, "ERROR");
+    await OBR.notification.show(`Régua 1.0.0: falha em ${first.description}. ${detail}`, "ERROR");
   } catch (notificationError) {
-    console.error("Régua 0.3.19: falha ao mostrar o aviso de erro.", notificationError);
+    console.error("Régua 1.0.0: falha ao mostrar o aviso de erro.", notificationError);
   }
 }
 
@@ -1067,7 +1067,7 @@ async function addLocalOverlayItem(description, makeItem, destinationIds, errors
     return true;
   } catch (error) {
     errors.push({ description, error });
-    console.error(`Régua 0.3.19: falha ao desenhar ${description}.`, error);
+    console.error(`Régua 1.0.0: falha ao desenhar ${description}.`, error);
     return false;
   }
 }
@@ -1093,7 +1093,7 @@ async function renderMapUiOverlay(preserveOldUntilReady = false) {
     total = await calculateDistance();
   } catch (error) {
     errors.push({ description: "a distância", error });
-    console.error("Régua 0.3.19: falha ao calcular a distância.", error);
+    console.error("Régua 1.0.0: falha ao calcular a distância.", error);
   }
 
   const latest = state.points[state.points.length - 1];
@@ -1266,11 +1266,11 @@ async function refreshPersistentRouteBadges(sceneItems = null) {
       } catch (error) {
         await OBR.scene.local.deleteItems(displayItems.map((item) => item.id)).catch(() => {});
         state.persistentRouteBadges.set(route.id, { ids: [], signature: null });
-        console.error("Régua 0.3.19: falha ao desenhar uma rota com a aparência local.", error);
+        console.error("Régua 1.0.0: falha ao desenhar uma rota com a aparência local.", error);
       }
     }
   } catch (error) {
-    console.warn("Régua 0.3.19: não foi possível atualizar as rotas com a aparência local.", error);
+    console.warn("Régua 1.0.0: não foi possível atualizar as rotas com a aparência local.", error);
   } finally {
     state.persistentBadgeRefreshRunning = false;
     if (state.persistentBadgeRefreshQueued) {
@@ -1365,7 +1365,7 @@ async function syncMovedPersistentRouteGroup(routeId, rootId) {
     // their own visible group at the new coordinates with their private style.
     void refreshPersistentRouteBadges();
   } catch (error) {
-    console.warn("Régua 0.3.19: não foi possível sincronizar o deslocamento do grupo da régua.", error);
+    console.warn("Régua 1.0.0: não foi possível sincronizar o deslocamento do grupo da régua.", error);
   } finally {
     state.routeGroupSyncRunning = false;
   }
@@ -1385,7 +1385,7 @@ async function clearStaleLocalRouteVisuals() {
       .map((item) => item.id);
     if (ids.length) await OBR.scene.local.deleteItems(ids);
   } catch (error) {
-    console.warn("Régua 0.3.19: não foi possível limpar desenhos locais antigos.", error);
+    console.warn("Régua 1.0.0: não foi possível limpar desenhos locais antigos.", error);
   }
 }
 
@@ -1417,7 +1417,7 @@ async function migrateRoutesToLocalRendering() {
       });
     }
   } catch (error) {
-    console.warn("Régua 0.3.19: não foi possível migrar rotas antigas para exibição local.", error);
+    console.warn("Régua 1.0.0: não foi possível migrar rotas antigas para exibição local.", error);
   }
 }
 
@@ -1805,7 +1805,7 @@ async function attachLocalItemsToParent(ids, parentId) {
   await OBR.scene.local.updateItems(ids, (items) => {
     for (const item of items) item.attachedTo = parentId;
   }).catch((error) => {
-    console.warn("Régua 0.3.19: não foi possível conectar os elementos ao grupo de prévia.", error);
+    console.warn("Régua 1.0.0: não foi possível conectar os elementos ao grupo de prévia.", error);
   });
 }
 
@@ -2313,10 +2313,10 @@ OBR.onReady(async () => {
     OBR.scene.items.onChange((items) => { void refreshPersistentRouteBadges(items); });
     OBR.scene.local.onChange((items) => { handleLocalRouteGroupChanges(items); });
     await refreshPersistentRouteBadges();
-    console.info("Régua de Percurso 0.3.19 carregada.");
-    await OBR.notification.show("Régua de Percurso 0.3.19 carregada", "INFO");
+    console.info("Régua de Percurso 1.0.0 carregada.");
+    await OBR.notification.show("Régua de Percurso 1.0.0 carregada", "INFO");
   } catch (error) {
-    console.error("Falha ao registrar as ferramentas da Régua de Percurso 0.3.19.", error);
+    console.error("Falha ao registrar as ferramentas da Régua de Percurso 1.0.0.", error);
     try {
       await OBR.notification.show(
         "A Régua de Percurso não conseguiu registrar a ferramenta. Consulte o Console do navegador.",
